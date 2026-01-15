@@ -2,13 +2,19 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Flashcard from './Flashcard'
+import SentenceSubmissionForm from './SentenceSubmissionForm'
+import WaitingState from './WaitingState'
+import TranslationForm from './TranslationForm'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, Loader2 } from 'lucide-react'
+import { RefreshCw, Loader2, CheckCircle } from 'lucide-react'
 import { getRandomWords, markWordDone, Word } from '@/app/actions/words'
+import { getActiveConversation, Conversation } from '@/app/actions/conversations'
 
 interface FlashcardDeckProps {
   userId: string | null
 }
+
+type ConversationFlow = 'cards' | 'sentence' | 'waiting' | 'translate' | 'completed'
 
 export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   const [sessionId, setSessionId] = useState<string>('')
@@ -26,6 +32,10 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Conversation flow state
+  const [flowState, setFlowState] = useState<ConversationFlow>('cards')
+  const [activeConversation, setActiveConversation] = useState<Conversation | null>(null)
+
   // Generate session ID on mount
   useEffect(() => {
     if (!userId) return
@@ -40,6 +50,21 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
     }
   }, [userId])
 
+  // Check for active conversation (user-level, not session-level)
+  const checkConversation = useCallback(async () => {
+    if (!userId) return
+
+    const result = await getActiveConversation(userId)
+    if (result.conversation) {
+      setActiveConversation(result.conversation)
+      if (result.conversation.status === 'pending') {
+        setFlowState('waiting')
+      } else if (result.conversation.status === 'replied') {
+        setFlowState('translate')
+      }
+    }
+  }, [userId])
+
   // Fetch words when session is ready
   const fetchWords = useCallback(async () => {
     if (!userId || !sessionId) return
@@ -48,6 +73,9 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
     setError(null)
 
     try {
+      // First check if there's an active conversation
+      await checkConversation()
+
       const result = await getRandomWords(userId, sessionId)
       if (result.error) {
         setError(result.error)
@@ -64,7 +92,7 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [userId, sessionId])
+  }, [userId, sessionId, checkConversation])
 
   useEffect(() => {
     if (sessionId && userId) {
@@ -95,6 +123,29 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
     sessionStorage.setItem('learningSessionId', newSessionId)
     setSessionId(newSessionId)
     setDoneWords(new Set())
+    setFlowState('cards')
+    setActiveConversation(null)
+  }
+
+  const handleSentenceSubmitted = () => {
+    setFlowState('waiting')
+    checkConversation()
+  }
+
+  const handleCheckForReply = useCallback(async () => {
+    if (!userId) return
+
+    const result = await getActiveConversation(userId)
+    if (result.conversation) {
+      setActiveConversation(result.conversation)
+      if (result.conversation.status === 'replied') {
+        setFlowState('translate')
+      }
+    }
+  }, [userId])
+
+  const handleTranslationSubmitted = () => {
+    setFlowState('completed')
   }
 
   // Show message if user is not authenticated
@@ -139,6 +190,51 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   const adjectiveDone = !words.adjective || doneWords.has(words.adjective.id)
   const allCurrentCardsDone = hasAnyWords && nounDone && verbDone && adjectiveDone
 
+  // Render based on flow state
+  if (flowState === 'waiting' && activeConversation) {
+    return (
+      <div className="flex flex-col items-center gap-8 w-full">
+        <WaitingState
+          sentenceTamil={activeConversation.learner_sentence_tamil}
+          onCheckForReply={handleCheckForReply}
+        />
+      </div>
+    )
+  }
+
+  if (flowState === 'translate' && activeConversation && activeConversation.admin_reply_tamil) {
+    return (
+      <div className="flex flex-col items-center gap-8 w-full">
+        <TranslationForm
+          conversationId={activeConversation.id}
+          adminReplyTamil={activeConversation.admin_reply_tamil}
+          learnerSentenceTamil={activeConversation.learner_sentence_tamil}
+          onSubmitSuccess={handleTranslationSubmitted}
+        />
+      </div>
+    )
+  }
+
+  if (flowState === 'completed') {
+    return (
+      <div className="flex flex-col items-center gap-8 w-full">
+        <div className="text-center space-y-4">
+          <CheckCircle className="w-16 h-16 text-green-400 mx-auto" />
+          <h3 className="text-2xl font-semibold text-white">Conversation Complete!</h3>
+          <p className="text-white/70">Great job! You can now get new cards to continue learning.</p>
+          <Button
+            onClick={handleRefresh}
+            variant="outline"
+            className="bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white px-6"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Get New Cards
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col items-center gap-8 w-full">
       {!hasAnyWords ? (
@@ -178,17 +274,15 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
             )}
           </div>
 
-          {allCurrentCardsDone && (
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-white/80 text-center">Great job! You&apos;ve completed all three cards.</p>
-              <Button
-                onClick={handleRefresh}
-                variant="outline"
-                className="bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white px-6"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Get New Cards
-              </Button>
+          {allCurrentCardsDone && flowState === 'cards' && (
+            <div className="flex flex-col items-center gap-4 w-full">
+              <p className="text-white/80 text-center">Great job! Now write a Tamil sentence using these words.</p>
+              <SentenceSubmissionForm
+                userId={userId}
+                sessionId={sessionId}
+                words={words}
+                onSubmitSuccess={handleSentenceSubmitted}
+              />
             </div>
           )}
         </>

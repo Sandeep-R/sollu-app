@@ -33,9 +33,14 @@ export default async function AdminPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <Button variant="outline" asChild>
-            <Link href="/">Back to App</Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" asChild>
+              <Link href="/admin/conversations">Conversations</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/">Back to App</Link>
+            </Button>
+          </div>
         </div>
         <AddWordForm />
         <WordList words={words} />

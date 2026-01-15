@@ -176,3 +176,23 @@ export async function clearSessionProgress(userId: string, sessionId: string) {
 
   return { success: true }
 }
+
+// Check if user can refresh words (no active conversation)
+export async function canRefreshWords(userId: string, sessionId: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('session_id', sessionId)
+    .in('status', ['pending', 'replied'])
+    .limit(1)
+
+  if (error) {
+    // If table doesn't exist yet or other error, allow refresh
+    return { canRefresh: true }
+  }
+
+  return { canRefresh: !data || data.length === 0 }
+}
