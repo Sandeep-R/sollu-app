@@ -8,15 +8,15 @@ export default async function Home() {
   return (
     <main className="gradient-bg min-h-screen flex flex-col items-center justify-center p-8 relative">
       <AuthButton />
-      <h1 className="text-white text-4xl font-bold mb-12 text-center drop-shadow-lg">
+      <h1 className="text-white text-4xl font-bold mb-8 text-center drop-shadow-lg">
         Learn Tamil
       </h1>
       {user && (
-        <p className="text-white/90 mb-4 text-base text-center">
+        <p className="text-white/90 mb-6 text-base text-center">
           Welcome back! Ready to learn?
         </p>
       )}
-      <FlashcardDeck />
+      <FlashcardDeck userId={user?.id ?? null} />
     </main>
   )
 }

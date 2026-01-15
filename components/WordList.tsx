@@ -17,6 +17,7 @@ interface Word {
   transliteration: string
   meaning: string
   tamil: string | null
+  word_type: 'noun' | 'verb' | 'adjective'
 }
 
 export default function WordList({ words }: { words: Word[] }) {
@@ -44,6 +45,7 @@ export default function WordList({ words }: { words: Word[] }) {
                 <TableHead>Transliteration</TableHead>
                 <TableHead>Meaning</TableHead>
                 <TableHead>Tamil</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -54,6 +56,7 @@ export default function WordList({ words }: { words: Word[] }) {
                   <TableCell className="font-medium">{word.transliteration}</TableCell>
                   <TableCell>{word.meaning}</TableCell>
                   <TableCell>{word.tamil || '-'}</TableCell>
+                  <TableCell className="capitalize">{word.word_type}</TableCell>
                   <TableCell>
                     <Button
                       variant="destructive"
