@@ -1,0 +1,14 @@
+To create PNG icons:
+
+1. Open public/generate-icons.html in your browser
+2. Click "Generate icon-192.png" and "Generate icon-512.png"
+3. Save the downloaded files to the public/ directory
+
+OR
+
+Use an online tool:
+- Go to https://realfavicongenerator.net/
+- Upload public/icon.svg
+- Download and place icon-192.png and icon-512.png in public/
+
+The app will work once these PNG files are created.
