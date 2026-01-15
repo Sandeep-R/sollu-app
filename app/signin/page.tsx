@@ -1,62 +1,31 @@
 import SignInForm from '@/components/SignInForm'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import Link from 'next/link'
 import { Suspense } from 'react'
 
 export default function SignInPage() {
   return (
-    <main style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '1rem',
-        padding: '2.5rem',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
-        width: '100%',
-        maxWidth: '400px'
-      }}>
-        <h1 style={{
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          marginBottom: '0.5rem',
-          color: '#333',
-          textAlign: 'center'
-        }}>
-          Sign In
-        </h1>
-        <p style={{
-          color: '#666',
-          marginBottom: '2rem',
-          textAlign: 'center',
-          fontSize: '0.9rem'
-        }}>
-          Welcome back! Sign in to continue learning
-        </p>
+    <main className="gradient-bg min-h-screen flex items-center justify-center p-8">
+      <Card className="w-full max-w-[400px] shadow-xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Sign In</CardTitle>
+          <CardDescription>
+            Welcome back! Sign in to continue learning
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Suspense fallback={<div>Loading...</div>}>
+            <SignInForm />
+          </Suspense>
 
-        <Suspense fallback={<div>Loading...</div>}>
-          <SignInForm />
-        </Suspense>
-
-        <p style={{
-          textAlign: 'center',
-          marginTop: '1.5rem',
-          color: '#666',
-          fontSize: '0.9rem'
-        }}>
-          Don&apos;t have an account?{' '}
-          <a href="/signup" style={{
-            color: '#667eea',
-            textDecoration: 'none',
-            fontWeight: '500'
-          }}>
-            Sign Up
-          </a>
-        </p>
-      </div>
+          <p className="text-center mt-6 text-sm text-muted-foreground">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-primary font-medium hover:underline">
+              Sign Up
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
     </main>
   )
 }

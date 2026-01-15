@@ -1,7 +1,16 @@
 'use client'
 
 import { deleteWord } from '@/app/actions/words'
-import './AdminStyles.css'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 interface Word {
   id: number
@@ -18,40 +27,48 @@ export default function WordList({ words }: { words: Word[] }) {
   }
 
   return (
-    <div className="word-list">
-      <h2 className="list-title">All Words ({words.length})</h2>
-      <table className="words-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Transliteration</th>
-            <th>Meaning</th>
-            <th>Tamil</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {words.map((word) => (
-            <tr key={word.id}>
-              <td>{word.id}</td>
-              <td>{word.transliteration}</td>
-              <td>{word.meaning}</td>
-              <td>{word.tamil || '-'}</td>
-              <td>
-                <button
-                  onClick={() => handleDelete(word.id)}
-                  className="delete-button"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {words.length === 0 && (
-        <p className="no-words">No words yet. Add your first word above!</p>
-      )}
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>All Words ({words.length})</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {words.length === 0 ? (
+          <p className="text-center text-muted-foreground py-8">
+            No words yet. Add your first word above!
+          </p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Transliteration</TableHead>
+                <TableHead>Meaning</TableHead>
+                <TableHead>Tamil</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {words.map((word) => (
+                <TableRow key={word.id}>
+                  <TableCell>{word.id}</TableCell>
+                  <TableCell className="font-medium">{word.transliteration}</TableCell>
+                  <TableCell>{word.meaning}</TableCell>
+                  <TableCell>{word.tamil || '-'}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(word.id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   )
 }

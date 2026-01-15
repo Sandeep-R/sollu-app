@@ -2,46 +2,43 @@
 
 import { signUp } from '@/app/actions/auth'
 import AuthError from '@/components/AuthError'
-import './AuthForm.css'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 export default function SignUpForm() {
   return (
     <>
       <AuthError />
-      <form action={signUp} className="auth-form">
-        <div>
-          <label htmlFor="email" className="auth-label">
-            Email
-          </label>
-          <input
+      <form action={signUp} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
             type="email"
             id="email"
             name="email"
             required
-            className="auth-input"
+            placeholder="you@example.com"
           />
         </div>
 
-        <div>
-          <label htmlFor="password" className="auth-label">
-            Password
-          </label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
             type="password"
             id="password"
             name="password"
             required
             minLength={6}
-            className="auth-input"
           />
-          <p className="auth-hint">
+          <p className="text-sm text-muted-foreground">
             Must be at least 6 characters
           </p>
         </div>
 
-        <button type="submit" className="auth-button">
+        <Button type="submit" className="w-full">
           Sign Up
-        </button>
+        </Button>
       </form>
     </>
   )

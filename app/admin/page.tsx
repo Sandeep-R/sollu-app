@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
-import '@/components/AdminStyles.css'
+import { Button } from '@/components/ui/button'
 
 export default async function AdminPage() {
   const user = await getUser()
@@ -29,13 +29,13 @@ export default async function AdminPage() {
   const { words } = await getWords()
 
   return (
-    <main className="admin-container">
-      <div className="admin-content">
-        <div className="admin-header">
-          <h1 className="admin-title">Admin Dashboard</h1>
-          <Link href="/" className="back-link">
-            Back to App
-          </Link>
+    <main className="min-h-screen bg-muted/30 p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <Button variant="outline" asChild>
+            <Link href="/">Back to App</Link>
+          </Button>
         </div>
         <AddWordForm />
         <WordList words={words} />

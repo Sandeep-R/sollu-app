@@ -1,5 +1,7 @@
 'use client'
 
+import { Card } from '@/components/ui/card'
+
 interface FlashcardProps {
   word: {
     id: number
@@ -15,116 +17,54 @@ export default function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
   return (
     <div
       onClick={onFlip}
-      style={{
-        width: '100%',
-        aspectRatio: '16/9',
-        maxWidth: '500px',
-        perspective: '1000px',
-        cursor: 'pointer'
-      }}
+      className="w-full aspect-video max-w-[500px] cursor-pointer"
+      style={{ perspective: '1000px' }}
     >
       <div
+        className="relative w-full h-full transition-transform duration-500"
         style={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
           transformStyle: 'preserve-3d',
-          transition: 'transform 0.6s',
           transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
         }}
       >
         {/* Front of card */}
-        <div
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            backfaceVisibility: 'hidden',
-            backgroundColor: 'white',
-            borderRadius: '1rem',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '2rem',
-            border: '1px solid rgba(255,255,255,0.2)'
-          }}
+        <Card
+          className="absolute w-full h-full flex flex-col items-center justify-center p-8 shadow-xl"
+          style={{ backfaceVisibility: 'hidden' }}
         >
-          <div style={{
-            fontSize: '2.5rem',
-            fontWeight: 'bold',
-            color: '#667eea',
-            marginBottom: '1rem',
-            textAlign: 'center'
-          }}>
+          <div className="text-4xl font-bold text-primary mb-4 text-center">
             {word.transliteration}
           </div>
           {word.tamil && (
-            <div style={{
-              fontSize: '1.5rem',
-              color: '#764ba2',
-              marginTop: '0.5rem'
-            }}>
+            <div className="text-2xl text-muted-foreground mt-2">
               {word.tamil}
             </div>
           )}
-          <div style={{
-            marginTop: '2rem',
-            fontSize: '0.9rem',
-            color: '#666',
-            fontStyle: 'italic'
-          }}>
+          <div className="mt-8 text-sm text-muted-foreground italic">
             Click to reveal meaning
           </div>
-        </div>
+        </Card>
 
         {/* Back of card */}
-        <div
+        <Card
+          className="absolute w-full h-full flex flex-col items-center justify-center p-8 bg-primary text-primary-foreground shadow-xl"
           style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
             backfaceVisibility: 'hidden',
-            backgroundColor: '#667eea',
-            borderRadius: '1rem',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '2rem',
-            transform: 'rotateY(180deg)',
-            border: '1px solid rgba(255,255,255,0.2)'
+            transform: 'rotateY(180deg)'
           }}
         >
-          <div style={{
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            color: 'white',
-            textAlign: 'center',
-            lineHeight: '1.4'
-          }}>
+          <div className="text-3xl font-bold text-center leading-relaxed">
             {word.meaning}
           </div>
           {word.tamil && (
-            <div style={{
-              fontSize: '1.2rem',
-              color: 'rgba(255,255,255,0.9)',
-              marginTop: '1.5rem'
-            }}>
+            <div className="text-xl text-primary-foreground/90 mt-6">
               {word.tamil}
             </div>
           )}
-          <div style={{
-            marginTop: '2rem',
-            fontSize: '0.9rem',
-            color: 'rgba(255,255,255,0.8)',
-            fontStyle: 'italic'
-          }}>
+          <div className="mt-8 text-sm text-primary-foreground/80 italic">
             Click to flip back
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   )

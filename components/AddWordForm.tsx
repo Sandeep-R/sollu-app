@@ -2,7 +2,10 @@
 
 import { addWord } from '@/app/actions/words'
 import { useRef } from 'react'
-import './AdminStyles.css'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function AddWordForm() {
   const formRef = useRef<HTMLFormElement>(null)
@@ -15,51 +18,44 @@ export default function AddWordForm() {
   }
 
   return (
-    <form ref={formRef} action={handleSubmit} className="add-word-form">
-      <h2 className="form-title">Add New Word</h2>
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="transliteration" className="form-label">
-            Transliteration *
-          </label>
-          <input
-            type="text"
-            id="transliteration"
-            name="transliteration"
-            required
-            className="form-input"
-            placeholder="e.g., Vanakkam"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="meaning" className="form-label">
-            Meaning *
-          </label>
-          <input
-            type="text"
-            id="meaning"
-            name="meaning"
-            required
-            className="form-input"
-            placeholder="e.g., Hello / Greetings"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="tamil" className="form-label">
-            Tamil Script
-          </label>
-          <input
-            type="text"
-            id="tamil"
-            name="tamil"
-            className="form-input"
-            placeholder="e.g., வணக்கம்"
-          />
-        </div>
-        <button type="submit" className="add-button">
-          Add Word
-        </button>
-      </div>
-    </form>
+    <Card className="mb-8">
+      <CardHeader>
+        <CardTitle>Add New Word</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form ref={formRef} action={handleSubmit} className="flex flex-col md:flex-row gap-4 items-end">
+          <div className="flex-1 space-y-2">
+            <Label htmlFor="transliteration">Transliteration *</Label>
+            <Input
+              type="text"
+              id="transliteration"
+              name="transliteration"
+              required
+              placeholder="e.g., Vanakkam"
+            />
+          </div>
+          <div className="flex-1 space-y-2">
+            <Label htmlFor="meaning">Meaning *</Label>
+            <Input
+              type="text"
+              id="meaning"
+              name="meaning"
+              required
+              placeholder="e.g., Hello / Greetings"
+            />
+          </div>
+          <div className="flex-1 space-y-2">
+            <Label htmlFor="tamil">Tamil Script</Label>
+            <Input
+              type="text"
+              id="tamil"
+              name="tamil"
+              placeholder="e.g., வணக்கம்"
+            />
+          </div>
+          <Button type="submit">Add Word</Button>
+        </form>
+      </CardContent>
+    </Card>
   )
 }

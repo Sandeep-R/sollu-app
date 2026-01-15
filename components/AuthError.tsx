@@ -1,6 +1,8 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
 
 export default function AuthError() {
   const searchParams = useSearchParams()
@@ -9,16 +11,9 @@ export default function AuthError() {
   if (!error) return null
 
   return (
-    <div style={{
-      padding: '1rem',
-      backgroundColor: '#fee',
-      border: '1px solid #fcc',
-      borderRadius: '0.5rem',
-      marginBottom: '1rem',
-      color: '#c33',
-      fontSize: '0.9rem'
-    }}>
-      {error}
-    </div>
+    <Alert variant="destructive" className="mb-4">
+      <AlertCircle className="h-4 w-4" />
+      <AlertDescription>{error}</AlertDescription>
+    </Alert>
   )
 }

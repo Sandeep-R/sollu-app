@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Flashcard from './Flashcard'
+import { Button } from '@/components/ui/button'
 
 interface Word {
   id: number
@@ -52,86 +53,34 @@ export default function FlashcardDeck() {
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '2rem',
-      width: '100%',
-      maxWidth: '600px'
-    }}>
-      <div style={{
-        display: 'flex',
-        gap: '1rem',
-        alignItems: 'center',
-        marginBottom: '1rem'
-      }}>
-        <span style={{
-          color: 'white',
-          fontSize: '1rem',
-          fontWeight: '500',
-          opacity: 0.9
-        }}>
+    <div className="flex flex-col items-center gap-8 w-full max-w-[600px]">
+      <div className="flex gap-4 items-center mb-4">
+        <span className="text-white text-base font-medium opacity-90">
           {currentIndex + 1} / {words.length}
         </span>
       </div>
 
-      <Flashcard 
-        word={currentWord} 
+      <Flashcard
+        word={currentWord}
         isFlipped={isFlipped}
         onFlip={handleFlip}
       />
 
-      <div style={{
-        display: 'flex',
-        gap: '1rem',
-        width: '100%',
-        justifyContent: 'center'
-      }}>
-        <button
+      <div className="flex gap-4 w-full justify-center">
+        <Button
           onClick={handlePrevious}
-          style={{
-            padding: '0.75rem 2rem',
-            fontSize: '1rem',
-            fontWeight: '600',
-            color: 'white',
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            border: '2px solid rgba(255, 255, 255, 0.3)',
-            borderRadius: '0.5rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
-          }}
+          variant="outline"
+          className="bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white px-8"
         >
           Previous
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleNext}
-          style={{
-            padding: '0.75rem 2rem',
-            fontSize: '1rem',
-            fontWeight: '600',
-            color: 'white',
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            border: '2px solid rgba(255, 255, 255, 0.3)',
-            borderRadius: '0.5rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
-          }}
+          variant="outline"
+          className="bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white px-8"
         >
           Next
-        </button>
+        </Button>
       </div>
     </div>
   )
