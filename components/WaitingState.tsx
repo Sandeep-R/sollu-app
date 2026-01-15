@@ -25,34 +25,34 @@ export default function WaitingState({
   }, [onCheckForReply, pollInterval])
 
   return (
-    <Card className="w-full max-w-2xl bg-white/10 backdrop-blur-sm border-white/20">
-      <CardContent className="pt-6">
-        <div className="flex flex-col items-center gap-6 text-center">
+    <Card className="w-full max-w-full md:max-w-2xl bg-white/10 backdrop-blur-sm border-white/20">
+      <CardContent className="p-4 md:p-6">
+        <div className="flex flex-col items-center gap-4 md:gap-6 text-center">
           <div className="relative">
-            <MessageCircle className="w-16 h-16 text-white/60" />
+            <MessageCircle className="w-12 h-12 md:w-16 md:h-16 text-white/60" />
             <div className="absolute -bottom-1 -right-1 bg-white/20 rounded-full p-1">
-              <Loader2 className="w-5 h-5 text-white animate-spin" />
+              <Loader2 className="w-4 h-4 md:w-5 md:h-5 text-white animate-spin" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-xl font-semibold text-white">
+            <h3 className="text-lg md:text-xl font-semibold text-white">
               Waiting for Admin Reply
             </h3>
-            <p className="text-white/70 text-sm">
+            <p className="text-white/70 text-xs md:text-sm">
               Your sentence has been submitted. An admin will reply shortly.
             </p>
           </div>
 
-          <div className="w-full p-4 bg-white/5 rounded-lg">
+          <div className="w-full p-3 md:p-4 bg-white/5 rounded-lg">
             <p className="text-white/50 text-xs uppercase tracking-wide mb-2">
               Your sentence:
             </p>
-            <p className="text-white text-lg">{sentenceTamil}</p>
+            <p className="text-white text-base md:text-lg">{sentenceTamil}</p>
           </div>
 
-          <div className="flex items-center gap-2 text-white/50 text-sm">
-            <Loader2 className="w-4 h-4 animate-spin" />
+          <div className="flex items-center gap-2 text-white/50 text-xs md:text-sm">
+            <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin" />
             <span>Checking for reply...</span>
           </div>
         </div>

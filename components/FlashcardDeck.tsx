@@ -151,8 +151,8 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   // Show message if user is not authenticated
   if (!userId) {
     return (
-      <div className="text-white/80 text-center p-8">
-        <p className="text-lg mb-2">Sign in to start learning!</p>
+      <div className="text-white/80 text-center p-4 md:p-8">
+        <p className="text-base md:text-lg mb-2">Sign in to start learning!</p>
         <p className="text-sm opacity-70">Track your progress and learn Tamil words</p>
       </div>
     )
@@ -161,7 +161,7 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   // Show loading while fetching words or waiting for session
   if (isLoading || !sessionId) {
     return (
-      <div className="flex items-center justify-center p-12">
+      <div className="flex items-center justify-center p-8 md:p-12">
         <Loader2 className="w-8 h-8 text-white animate-spin" />
       </div>
     )
@@ -169,7 +169,7 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
 
   if (error) {
     return (
-      <div className="text-red-300 text-center p-8">
+      <div className="text-red-300 text-center p-4 md:p-8">
         <p>{error}</p>
         <Button
           onClick={fetchWords}
@@ -193,7 +193,7 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   // Render based on flow state
   if (flowState === 'waiting' && activeConversation) {
     return (
-      <div className="flex flex-col items-center gap-8 w-full">
+      <div className="flex flex-col items-center gap-4 md:gap-8 w-full px-4 md:px-0">
         <WaitingState
           sentenceTamil={activeConversation.learner_sentence_tamil}
           onCheckForReply={handleCheckForReply}
@@ -204,7 +204,7 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
 
   if (flowState === 'translate' && activeConversation && activeConversation.admin_reply_tamil) {
     return (
-      <div className="flex flex-col items-center gap-8 w-full">
+      <div className="flex flex-col items-center gap-4 md:gap-8 w-full px-4 md:px-0">
         <TranslationForm
           conversationId={activeConversation.id}
           adminReplyTamil={activeConversation.admin_reply_tamil}
@@ -217,15 +217,15 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
 
   if (flowState === 'completed') {
     return (
-      <div className="flex flex-col items-center gap-8 w-full">
-        <div className="text-center space-y-4">
-          <CheckCircle className="w-16 h-16 text-green-400 mx-auto" />
-          <h3 className="text-2xl font-semibold text-white">Conversation Complete!</h3>
-          <p className="text-white/70">Great job! You can now get new cards to continue learning.</p>
+      <div className="flex flex-col items-center gap-4 md:gap-8 w-full px-4 md:px-0">
+        <div className="text-center space-y-3 md:space-y-4">
+          <CheckCircle className="w-12 h-12 md:w-16 md:h-16 text-green-400 mx-auto" />
+          <h3 className="text-xl md:text-2xl font-semibold text-white">Conversation Complete!</h3>
+          <p className="text-white/70 text-sm md:text-base">Great job! You can now get new cards to continue learning.</p>
           <Button
             onClick={handleRefresh}
             variant="outline"
-            className="bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white px-6"
+            className="bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white px-4 md:px-6"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Get New Cards
@@ -236,15 +236,15 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-8 w-full">
+    <div className="flex flex-col items-center gap-4 md:gap-8 w-full px-4 md:px-0">
       {!hasAnyWords ? (
-        <div className="text-white/80 text-center p-8">
-          <p className="text-lg">No words available yet.</p>
+        <div className="text-white/80 text-center p-4 md:p-8">
+          <p className="text-base md:text-lg">No words available yet.</p>
           <p className="text-sm opacity-70">Check back later!</p>
         </div>
       ) : (
         <>
-          <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-center items-center md:items-start w-full">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-8 justify-center items-center md:items-start w-full">
             {words.noun && (
               <Flashcard
                 word={words.noun}
@@ -275,8 +275,8 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
           </div>
 
           {allCurrentCardsDone && flowState === 'cards' && (
-            <div className="flex flex-col items-center gap-4 w-full">
-              <p className="text-white/80 text-center">Great job! Now write a Tamil sentence using these words.</p>
+            <div className="flex flex-col items-center gap-3 md:gap-4 w-full">
+              <p className="text-white/80 text-center text-sm md:text-base">Great job! Now write a Tamil sentence using these words.</p>
               <SentenceSubmissionForm
                 userId={userId}
                 sessionId={sessionId}

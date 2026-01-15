@@ -29,15 +29,15 @@ export default async function AdminPage() {
   const { words } = await getWords()
 
   return (
-    <main className="min-h-screen bg-muted/30 p-8">
+    <main className="min-h-screen bg-muted/30 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
           <div className="flex gap-2">
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="text-xs md:text-sm h-9 md:h-10">
               <Link href="/admin/conversations">Conversations</Link>
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="text-xs md:text-sm h-9 md:h-10">
               <Link href="/">Back to App</Link>
             </Button>
           </div>

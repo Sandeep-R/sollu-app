@@ -31,7 +31,7 @@ export default function Flashcard({ word, isFlipped, onFlip, onMarkDone, isDone 
     : null
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-2 md:gap-3 w-full max-w-[280px]">
       {wordTypeLabel && (
         <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
           {wordTypeLabel}
@@ -39,7 +39,7 @@ export default function Flashcard({ word, isFlipped, onFlip, onMarkDone, isDone 
       )}
       <div
         onClick={onFlip}
-        className={`w-[280px] h-[200px] cursor-pointer transition-opacity ${isDone ? 'opacity-50' : ''}`}
+        className={`w-full h-[160px] md:h-[200px] cursor-pointer transition-opacity ${isDone ? 'opacity-50' : ''}`}
         style={{ perspective: '1000px' }}
       >
         <div
@@ -51,40 +51,40 @@ export default function Flashcard({ word, isFlipped, onFlip, onMarkDone, isDone 
         >
           {/* Front of card */}
           <Card
-            className="absolute w-full h-full flex flex-col items-center justify-center p-5 shadow-xl"
+            className="absolute w-full h-full flex flex-col items-center justify-center p-4 md:p-5 shadow-xl"
             style={{ backfaceVisibility: 'hidden' }}
           >
-            <div className="text-lg font-bold text-primary text-center leading-tight">
+            <div className="text-base md:text-lg font-bold text-primary text-center leading-tight">
               {word.transliteration}
             </div>
             {word.tamil && (
-              <div className="text-base text-muted-foreground mt-2 text-center">
+              <div className="text-sm md:text-base text-muted-foreground mt-2 text-center">
                 {word.tamil}
               </div>
             )}
             <div className="mt-auto pt-2 text-xs text-muted-foreground italic">
-              Click to reveal meaning
+              Tap to reveal meaning
             </div>
           </Card>
 
           {/* Back of card */}
           <Card
-            className="absolute w-full h-full flex flex-col items-center justify-center p-5 bg-primary text-primary-foreground shadow-xl"
+            className="absolute w-full h-full flex flex-col items-center justify-center p-4 md:p-5 bg-primary text-primary-foreground shadow-xl"
             style={{
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)'
             }}
           >
-            <div className="text-base font-bold text-center leading-tight">
+            <div className="text-sm md:text-base font-bold text-center leading-tight">
               {word.meaning}
             </div>
             {word.tamil && (
-              <div className="text-sm text-primary-foreground/90 mt-2 text-center">
+              <div className="text-xs md:text-sm text-primary-foreground/90 mt-2 text-center">
                 {word.tamil}
               </div>
             )}
             <div className="mt-auto pt-2 text-xs text-primary-foreground/80 italic">
-              Click to flip back
+              Tap to flip back
             </div>
           </Card>
         </div>

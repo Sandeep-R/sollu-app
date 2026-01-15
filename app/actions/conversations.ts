@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { isAdmin, getUser } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
+import { StoredEvaluation } from '@/lib/llm/types'
 
 export type ConversationStatus = 'pending' | 'replied' | 'completed'
 
@@ -19,25 +20,42 @@ export interface Conversation {
   created_at: string
   admin_replied_at: string | null
   completed_at: string | null
+  // Evaluation fields
+  tamil_sentence_evaluation: StoredEvaluation | null
+  english_translation_evaluation: StoredEvaluation | null
+  admin_reply_translation_evaluation: StoredEvaluation | null
+  evaluation_attempts: number
+  final_tamil_sentence: string | null
+  final_english_translation: string | null
 }
 
 export interface ConversationWithUser extends Conversation {
   user_email?: string
 }
 
-// Submit a new Tamil sentence from learner
+// Submit a new Tamil sentence from learner (requires passing evaluation)
 export async function submitLearnerSentence(
   userId: string,
   sessionId: string,
   sentenceTamil: string,
-  wordIds: number[]
+  wordIds: number[],
+  evaluation?: StoredEvaluation
 ) {
   if (!sentenceTamil.trim()) {
-    return { error: 'Sentence is required' }
+    return { error: 'Tamil sentence is required' }
   }
 
   if (wordIds.length === 0) {
     return { error: 'At least one word must be selected' }
+  }
+
+  // Require evaluation to be passed and correct
+  if (!evaluation) {
+    return { error: 'Sentence must be evaluated before submission' }
+  }
+
+  if (evaluation.rating !== 'correct') {
+    return { error: 'Sentence must pass evaluation before submission' }
   }
 
   const supabase = await createClient()
@@ -66,7 +84,9 @@ export async function submitLearnerSentence(
       learner_sentence_tamil: sentenceTamil.trim(),
       word_ids_used: wordIds,
       status: 'pending',
-      user_email: userEmail
+      user_email: userEmail,
+      tamil_sentence_evaluation: evaluation,
+      final_tamil_sentence: sentenceTamil.trim()
     })
     .select()
     .single()
@@ -168,8 +188,12 @@ export async function replyToConversation(conversationId: string, replyTamil: st
   return { success: true, conversation: data as Conversation }
 }
 
-// Learner submits English translation of admin reply
-export async function submitTranslation(conversationId: string, translationEnglish: string) {
+// Learner submits English translation of admin reply (requires passing evaluation)
+export async function submitTranslation(
+  conversationId: string,
+  translationEnglish: string,
+  evaluation?: StoredEvaluation
+) {
   const user = await getUser()
   if (!user) {
     return { error: 'Unauthorized' }
@@ -177,6 +201,15 @@ export async function submitTranslation(conversationId: string, translationEngli
 
   if (!translationEnglish.trim()) {
     return { error: 'Translation is required' }
+  }
+
+  // Require evaluation to be passed and correct
+  if (!evaluation) {
+    return { error: 'Translation must be evaluated before submission' }
+  }
+
+  if (evaluation.rating !== 'correct') {
+    return { error: 'Translation must pass evaluation before submission' }
   }
 
   const supabase = await createClient()
@@ -199,7 +232,8 @@ export async function submitTranslation(conversationId: string, translationEngli
     .update({
       learner_translation_english: translationEnglish.trim(),
       status: 'completed',
-      completed_at: new Date().toISOString()
+      completed_at: new Date().toISOString(),
+      admin_reply_translation_evaluation: evaluation
     })
     .eq('id', conversationId)
     .select()
