@@ -33,7 +33,7 @@ export interface ConversationWithUser extends Conversation {
   user_email?: string
 }
 
-// Submit a new Tamil sentence from learner (requires passing evaluation)
+// Submit a new Tamil sentence from learner (evaluation is optional)
 export async function submitLearnerSentence(
   userId: string,
   sessionId: string,
@@ -49,14 +49,8 @@ export async function submitLearnerSentence(
     return { error: 'At least one word must be selected' }
   }
 
-  // Require evaluation to be passed and correct
-  if (!evaluation) {
-    return { error: 'Sentence must be evaluated before submission' }
-  }
-
-  if (evaluation.rating !== 'correct') {
-    return { error: 'Sentence must pass evaluation before submission' }
-  }
+  // Evaluation is now optional - learners can submit regardless of score
+  // This allows them to get help from instructors on difficult sentences
 
   const supabase = await createClient()
 
@@ -85,7 +79,7 @@ export async function submitLearnerSentence(
       word_ids_used: wordIds,
       status: 'pending',
       user_email: userEmail,
-      tamil_sentence_evaluation: evaluation,
+      tamil_sentence_evaluation: evaluation || null,
       final_tamil_sentence: sentenceTamil.trim()
     })
     .select()
@@ -203,14 +197,8 @@ export async function submitTranslation(
     return { error: 'Translation is required' }
   }
 
-  // Require evaluation to be passed and correct
-  if (!evaluation) {
-    return { error: 'Translation must be evaluated before submission' }
-  }
-
-  if (evaluation.rating !== 'correct') {
-    return { error: 'Translation must pass evaluation before submission' }
-  }
+  // Evaluation is now optional - learners can submit regardless of score
+  // This allows them to complete the conversation even if they're unsure of the translation
 
   const supabase = await createClient()
 
@@ -233,7 +221,7 @@ export async function submitTranslation(
       learner_translation_english: translationEnglish.trim(),
       status: 'completed',
       completed_at: new Date().toISOString(),
-      admin_reply_translation_evaluation: evaluation
+      admin_reply_translation_evaluation: evaluation || null
     })
     .eq('id', conversationId)
     .select()

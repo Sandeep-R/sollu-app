@@ -61,8 +61,8 @@ export default function TranslationForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!evaluation || evaluation.rating !== 'correct') {
-      setError('Please evaluate your translation first and ensure it passes')
+    if (!translation.trim()) {
+      setError('Please enter your English translation')
       return
     }
 
@@ -72,7 +72,7 @@ export default function TranslationForm({
     const result = await submitTranslation(
       conversationId,
       translation.trim(),
-      evaluation
+      evaluation || undefined
     )
 
     if (result.error) {
@@ -83,7 +83,7 @@ export default function TranslationForm({
     }
   }
 
-  const canSubmit = evaluation?.rating === 'correct'
+  const canSubmit = translation.trim()
 
   return (
     <Card className="w-full max-w-full md:max-w-2xl elevation-lg border-0">
@@ -146,12 +146,13 @@ export default function TranslationForm({
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-3">
-              {/* Evaluate Button - always visible unless already correct */}
-              {(!evaluation || evaluation.rating !== 'correct') && (
+              {/* Evaluate Button - optional but recommended */}
+              {evaluation?.rating !== 'correct' && (
                 <Button
                   type="button"
                   onClick={handleEvaluate}
                   disabled={isEvaluating || !translation.trim()}
+                  variant="outline"
                   size="lg"
                   className="w-full elevation-sm hover:elevation-md"
                 >
@@ -163,17 +164,17 @@ export default function TranslationForm({
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4 mr-2" />
-                      {evaluation ? 'Re-evaluate' : 'Evaluate Translation'}
+                      {evaluation ? 'Re-evaluate' : 'Evaluate Translation (Optional)'}
                     </>
                   )}
                 </Button>
               )}
 
-              {/* Submit Button - only enabled when evaluation passes */}
+              {/* Submit Button - always enabled when translation is provided */}
               <Button
                 type="submit"
                 disabled={isSubmitting || !canSubmit}
-                variant={canSubmit ? 'success' : 'secondary'}
+                variant={evaluation?.rating === 'correct' ? 'success' : 'default'}
                 size="lg"
                 className="w-full elevation-sm hover:elevation-md"
               >
@@ -190,9 +191,15 @@ export default function TranslationForm({
                 )}
               </Button>
 
-              {!canSubmit && !evaluation && (
+              {/* Helper text based on evaluation state */}
+              {!evaluation && canSubmit && (
                 <p className="text-muted-foreground text-xs text-center">
-                  Evaluate your translation to complete the conversation
+                  You can submit directly or evaluate first for feedback
+                </p>
+              )}
+              {evaluation && evaluation.rating !== 'correct' && (
+                <p className="text-warning text-xs text-center font-medium">
+                  Consider revising based on feedback, or submit as-is to complete the conversation
                 </p>
               )}
             </div>

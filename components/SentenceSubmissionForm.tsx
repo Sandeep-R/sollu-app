@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Send, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Loader2, Send, Sparkles } from 'lucide-react'
 import { submitLearnerSentence } from '@/app/actions/conversations'
 import { evaluateTamilSentence } from '@/app/actions/evaluations'
 import { Word } from '@/app/actions/words'
@@ -84,8 +84,13 @@ export default function SentenceSubmissionForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!evaluation || evaluation.rating !== 'correct') {
-      setError('Please evaluate your sentence first and ensure it passes')
+    if (!sentence.trim()) {
+      setError('Please enter a Tamil sentence')
+      return
+    }
+
+    if (selectedWords.size === 0) {
+      setError('Please select at least one word that you used')
       return
     }
 
@@ -97,7 +102,7 @@ export default function SentenceSubmissionForm({
       sessionId,
       sentence.trim(),
       Array.from(selectedWords),
-      evaluation
+      evaluation || undefined
     )
 
     if (result.error) {
@@ -108,7 +113,7 @@ export default function SentenceSubmissionForm({
     }
   }
 
-  const canSubmit = evaluation?.rating === 'correct'
+  const canSubmit = sentence.trim() && selectedWords.size > 0
 
   return (
     <Card className="w-full max-w-3xl elevation-lg border-0">
@@ -178,11 +183,13 @@ export default function SentenceSubmissionForm({
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-3 pt-2">
-            {(!evaluation || evaluation.rating !== 'correct') && (
+            {/* Evaluate button - optional but recommended */}
+            {evaluation?.rating !== 'correct' && (
               <Button
                 type="button"
                 onClick={handleEvaluate}
                 disabled={isEvaluating || !sentence.trim() || selectedWords.size === 0}
+                variant="outline"
                 className="w-full gap-2"
                 size="lg"
               >
@@ -194,16 +201,17 @@ export default function SentenceSubmissionForm({
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5" />
-                    <span>{evaluation ? 'Re-evaluate' : 'Evaluate Sentence'}</span>
+                    <span>{evaluation ? 'Re-evaluate' : 'Evaluate Sentence (Optional)'}</span>
                   </>
                 )}
               </Button>
             )}
 
+            {/* Submit button - always enabled when sentence and words are provided */}
             <Button
               type="submit"
               disabled={isSubmitting || !canSubmit}
-              variant={canSubmit ? 'success' : 'secondary'}
+              variant={evaluation?.rating === 'correct' ? 'success' : 'default'}
               size="lg"
               className="w-full gap-2"
             >
@@ -212,22 +220,23 @@ export default function SentenceSubmissionForm({
                   <Loader2 className="w-5 h-5 animate-spin" />
                   <span>Submitting</span>
                 </>
-              ) : canSubmit ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>Submit to Instructor</span>
-                </>
               ) : (
                 <>
                   <Send className="w-5 h-5" />
-                  <span>Evaluate to Submit</span>
+                  <span>Submit to Instructor</span>
                 </>
               )}
             </Button>
 
-            {!canSubmit && evaluation && evaluation.rating !== 'correct' && (
+            {/* Helper text based on evaluation state */}
+            {!evaluation && canSubmit && (
               <p className="text-muted-foreground text-xs text-center">
-                Revise your sentence based on the feedback above
+                You can submit directly or evaluate first for feedback
+              </p>
+            )}
+            {evaluation && evaluation.rating !== 'correct' && (
+              <p className="text-warning text-xs text-center font-medium">
+                Consider revising based on feedback, or submit as-is to get help from your instructor
               </p>
             )}
           </div>
