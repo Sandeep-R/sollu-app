@@ -1,6 +1,10 @@
 import FlashcardDeck from '@/components/FlashcardDeck'
+import AuthButton from '@/components/AuthButton'
+import { getUser } from '@/lib/auth'
 
-export default function Home() {
+export default async function Home() {
+  const user = await getUser()
+
   return (
     <main style={{ 
       minHeight: '100vh', 
@@ -8,8 +12,10 @@ export default function Home() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '2rem'
+      padding: '2rem',
+      position: 'relative'
     }}>
+      <AuthButton />
       <h1 style={{
         color: 'white',
         fontSize: '2.5rem',
@@ -20,6 +26,16 @@ export default function Home() {
       }}>
         Learn Tamil
       </h1>
+      {user && (
+        <p style={{
+          color: 'rgba(255, 255, 255, 0.9)',
+          marginBottom: '1rem',
+          fontSize: '1rem',
+          textAlign: 'center'
+        }}>
+          Welcome back! Ready to learn?
+        </p>
+      )}
       <FlashcardDeck />
     </main>
   )
