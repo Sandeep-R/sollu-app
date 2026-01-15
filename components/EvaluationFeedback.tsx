@@ -84,7 +84,7 @@ export function EvaluationFeedback({ evaluation, onReEvaluate, isLoading }: Eval
               <li key={index} className="text-sm bg-card/50 rounded-lg p-3 border border-border/50">
                 <span className="font-medium capitalize text-foreground">{error.type}</span>
                 {error.location && (
-                  <span className="text-muted-foreground"> in "{error.location}"</span>
+                  <span className="text-muted-foreground"> in &quot;{error.location}&quot;</span>
                 )}
                 <span className="text-muted-foreground">: {error.description}</span>
               </li>
