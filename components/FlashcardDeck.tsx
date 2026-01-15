@@ -6,7 +6,7 @@ import SentenceSubmissionForm from './SentenceSubmissionForm'
 import WaitingState from './WaitingState'
 import TranslationForm from './TranslationForm'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, Loader2, CheckCircle } from 'lucide-react'
+import { RefreshCw, Loader2, CheckCircle2, BookOpen, Sparkles } from 'lucide-react'
 import { getRandomWords, markWordDone, Word } from '@/app/actions/words'
 import { getActiveConversation, Conversation } from '@/app/actions/conversations'
 
@@ -151,9 +151,16 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   // Show message if user is not authenticated
   if (!userId) {
     return (
-      <div className="text-white/80 text-center p-4 md:p-8">
-        <p className="text-base md:text-lg mb-2">Sign in to start learning!</p>
-        <p className="text-sm opacity-70">Track your progress and learn Tamil words</p>
+      <div className="flex flex-col items-center justify-center gap-6 p-12 md:p-20">
+        <div className="w-20 h-20 rounded-full bg-secondary/50 flex items-center justify-center">
+          <BookOpen className="w-10 h-10 text-muted-foreground" />
+        </div>
+        <div className="text-center space-y-2 max-w-md">
+          <h3 className="text-2xl font-light text-foreground">Welcome</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Sign in to begin your Tamil learning journey
+          </p>
+        </div>
       </div>
     )
   }
@@ -161,23 +168,26 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   // Show loading while fetching words or waiting for session
   if (isLoading || !sessionId) {
     return (
-      <div className="flex items-center justify-center p-8 md:p-12">
-        <Loader2 className="w-8 h-8 text-white animate-spin" />
+      <div className="flex flex-col items-center justify-center gap-4 p-20">
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+        <p className="text-sm text-muted-foreground">Preparing your session</p>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="text-red-300 text-center p-4 md:p-8">
-        <p>{error}</p>
-        <Button
-          onClick={fetchWords}
-          variant="outline"
-          className="mt-4 bg-white/20 text-white border-white/30 hover:bg-white/30"
-        >
-          Try Again
-        </Button>
+      <div className="flex flex-col items-center gap-6 p-12 md:p-20">
+        <div className="text-center space-y-4 max-w-md">
+          <p className="text-destructive font-medium">{error}</p>
+          <Button
+            onClick={fetchWords}
+            variant="outline"
+            className="mt-4"
+          >
+            Try Again
+          </Button>
+        </div>
       </div>
     )
   }
@@ -217,18 +227,26 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
 
   if (flowState === 'completed') {
     return (
-      <div className="flex flex-col items-center gap-4 md:gap-8 w-full px-4 md:px-0">
-        <div className="text-center space-y-3 md:space-y-4">
-          <CheckCircle className="w-12 h-12 md:w-16 md:h-16 text-green-400 mx-auto" />
-          <h3 className="text-xl md:text-2xl font-semibold text-white">Conversation Complete!</h3>
-          <p className="text-white/70 text-sm md:text-base">Great job! You can now get new cards to continue learning.</p>
+      <div className="flex flex-col items-center gap-8 md:gap-12 w-full px-4 md:px-0 py-12 md:py-20">
+        <div className="text-center space-y-6 max-w-lg">
+          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-success/10 flex items-center justify-center mx-auto elevation-md">
+            <CheckCircle2 className="w-12 h-12 md:w-16 md:h-16 text-success" />
+          </div>
+          <div className="space-y-3">
+            <h3 className="text-3xl md:text-4xl font-light text-foreground tracking-tight">
+              Conversation Complete
+            </h3>
+            <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
+              Excellent work! Ready to continue your learning journey?
+            </p>
+          </div>
           <Button
             onClick={handleRefresh}
-            variant="outline"
-            className="bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white px-4 md:px-6"
+            size="lg"
+            className="mt-6 min-w-[200px] elevation-md hover:elevation-lg transition-all"
           >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Get New Cards
+            <Sparkles className="w-4 h-4 mr-2" />
+            Start New Session
           </Button>
         </div>
       </div>
@@ -236,15 +254,22 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 md:gap-8 w-full px-4 md:px-0">
+    <div className="flex flex-col items-center gap-8 md:gap-12 w-full px-4 md:px-8 py-6 md:py-12">
       {!hasAnyWords ? (
-        <div className="text-white/80 text-center p-4 md:p-8">
-          <p className="text-base md:text-lg">No words available yet.</p>
-          <p className="text-sm opacity-70">Check back later!</p>
+        <div className="flex flex-col items-center gap-6 p-12 md:p-20">
+          <div className="w-20 h-20 rounded-full bg-secondary/50 flex items-center justify-center">
+            <BookOpen className="w-10 h-10 text-muted-foreground" />
+          </div>
+          <div className="text-center space-y-2 max-w-md">
+            <h3 className="text-2xl font-light text-foreground">No Words Available</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Check back soon for new words to learn
+            </p>
+          </div>
         </div>
       ) : (
         <>
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-8 justify-center items-center md:items-start w-full">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 justify-center items-center md:items-start w-full max-w-7xl">
             {words.noun && (
               <Flashcard
                 word={words.noun}
@@ -275,8 +300,13 @@ export default function FlashcardDeck({ userId }: FlashcardDeckProps) {
           </div>
 
           {allCurrentCardsDone && flowState === 'cards' && (
-            <div className="flex flex-col items-center gap-3 md:gap-4 w-full">
-              <p className="text-white/80 text-center text-sm md:text-base">Great job! Now write a Tamil sentence using these words.</p>
+            <div className="flex flex-col items-center gap-6 w-full max-w-3xl mt-8">
+              <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-success/10 border border-success/20">
+                <CheckCircle2 className="w-5 h-5 text-success" />
+                <p className="text-foreground font-medium">
+                  Ready for the next step
+                </p>
+              </div>
               <SentenceSubmissionForm
                 userId={userId}
                 sessionId={sessionId}

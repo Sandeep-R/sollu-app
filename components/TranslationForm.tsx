@@ -86,36 +86,36 @@ export default function TranslationForm({
   const canSubmit = evaluation?.rating === 'correct'
 
   return (
-    <Card className="w-full max-w-full md:max-w-2xl bg-white/10 backdrop-blur-sm border-white/20">
-      <CardHeader className="p-4 md:p-6">
-        <CardTitle className="text-white text-center flex items-center justify-center gap-2 text-lg md:text-xl">
-          <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
+    <Card className="w-full max-w-full md:max-w-2xl elevation-lg border-0">
+      <CardHeader className="p-6 md:p-8">
+        <CardTitle className="text-foreground text-center flex items-center justify-center gap-2 text-xl md:text-2xl font-light">
+          <MessageCircle className="w-5 h-5 md:w-6 md:h-6" />
           Admin has Replied!
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 md:p-6 pt-0">
+      <CardContent className="p-6 md:p-8 pt-0">
         <div className="space-y-4 md:space-y-6">
           {/* Conversation thread */}
           <div className="space-y-3 md:space-y-4">
-            <div className="p-3 md:p-4 bg-white/5 rounded-lg border-l-4 border-white/30">
-              <p className="text-white/50 text-xs uppercase tracking-wide mb-1">
+            <div className="p-4 md:p-5 bg-accent/10 rounded-lg border-l-4 border-accent/50">
+              <p className="text-muted-foreground text-xs uppercase tracking-wider mb-2">
                 Your sentence:
               </p>
-              <p className="text-white text-sm md:text-base">{learnerSentenceTamil}</p>
+              <p className="text-foreground text-sm md:text-base">{learnerSentenceTamil}</p>
             </div>
 
-            <div className="p-3 md:p-4 bg-purple-500/20 rounded-lg border-l-4 border-purple-400">
-              <p className="text-purple-200 text-xs uppercase tracking-wide mb-1">
+            <div className="p-4 md:p-5 bg-primary/10 rounded-lg border-l-4 border-primary">
+              <p className="text-primary text-xs uppercase tracking-wider mb-2">
                 Admin reply (Tamil):
               </p>
-              <p className="text-white text-base md:text-lg font-medium">{adminReplyTamil}</p>
+              <p className="text-foreground text-base md:text-lg font-medium">{adminReplyTamil}</p>
             </div>
           </div>
 
           {/* Translation form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="translation" className="text-white/90 text-sm md:text-base">
+              <Label htmlFor="translation" className="text-foreground text-sm md:text-base">
                 Translate the admin&apos;s reply to English:
               </Label>
               <textarea
@@ -123,7 +123,7 @@ export default function TranslationForm({
                 value={translation}
                 onChange={e => handleTranslationChange(e.target.value)}
                 placeholder="Write your English translation here..."
-                className="w-full h-20 md:h-24 p-3 rounded-md bg-white/10 text-white placeholder:text-white/50 border border-white/20 focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 resize-none text-base"
+                className="w-full h-24 md:h-28 p-4 rounded-lg bg-background text-foreground placeholder:text-muted-foreground border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none text-base transition-all"
               />
             </div>
 
@@ -139,7 +139,9 @@ export default function TranslationForm({
             )}
 
             {error && (
-              <p className="text-red-300 text-sm text-center">{error}</p>
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <p className="text-destructive text-sm text-center">{error}</p>
+              </div>
             )}
 
             {/* Action Buttons */}
@@ -150,7 +152,8 @@ export default function TranslationForm({
                   type="button"
                   onClick={handleEvaluate}
                   disabled={isEvaluating || !translation.trim()}
-                  className="w-full bg-blue-600 text-white hover:bg-blue-700 h-11 md:h-10"
+                  size="lg"
+                  className="w-full elevation-sm hover:elevation-md"
                 >
                   {isEvaluating ? (
                     <>
@@ -170,11 +173,9 @@ export default function TranslationForm({
               <Button
                 type="submit"
                 disabled={isSubmitting || !canSubmit}
-                className={`w-full h-11 md:h-10 ${
-                  canSubmit
-                    ? 'bg-white text-purple-700 hover:bg-white/90'
-                    : 'bg-white/30 text-white/50 cursor-not-allowed'
-                }`}
+                variant={canSubmit ? 'success' : 'secondary'}
+                size="lg"
+                className="w-full elevation-sm hover:elevation-md"
               >
                 {isSubmitting ? (
                   <>
@@ -190,7 +191,7 @@ export default function TranslationForm({
               </Button>
 
               {!canSubmit && !evaluation && (
-                <p className="text-white/60 text-xs text-center">
+                <p className="text-muted-foreground text-xs text-center">
                   Evaluate your translation to complete the conversation
                 </p>
               )}

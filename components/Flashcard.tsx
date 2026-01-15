@@ -2,7 +2,7 @@
 
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Check } from 'lucide-react'
+import { Check, RotateCcw } from 'lucide-react'
 
 interface FlashcardProps {
   word: {
@@ -31,19 +31,24 @@ export default function Flashcard({ word, isFlipped, onFlip, onMarkDone, isDone 
     : null
 
   return (
-    <div className="flex flex-col items-center gap-2 md:gap-3 w-full max-w-[280px]">
+    <div className="flex flex-col items-center gap-4 md:gap-6 w-full max-w-[320px]">
       {wordTypeLabel && (
-        <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
-          {wordTypeLabel}
-        </span>
+        <div className="inline-flex items-center px-3 py-1 rounded-full bg-secondary/50 border border-border/50">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            {wordTypeLabel}
+          </span>
+        </div>
       )}
+
       <div
         onClick={onFlip}
-        className={`w-full h-[160px] md:h-[200px] cursor-pointer transition-opacity ${isDone ? 'opacity-50' : ''}`}
-        style={{ perspective: '1000px' }}
+        className={`w-full h-[240px] md:h-[280px] cursor-pointer transition-all duration-300 ${
+          isDone ? 'opacity-60 scale-95' : 'hover:scale-[1.02]'
+        }`}
+        style={{ perspective: '1200px' }}
       >
         <div
-          className="relative w-full h-full transition-transform duration-500"
+          className="relative w-full h-full transition-transform duration-700 ease-out"
           style={{
             transformStyle: 'preserve-3d',
             transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
@@ -51,57 +56,67 @@ export default function Flashcard({ word, isFlipped, onFlip, onMarkDone, isDone 
         >
           {/* Front of card */}
           <Card
-            className="absolute w-full h-full flex flex-col items-center justify-center p-4 md:p-5 shadow-xl"
+            className="absolute w-full h-full flex flex-col items-center justify-center p-8 md:p-10 elevation-lg border-0 bg-card transition-smooth hover:elevation-xl"
             style={{ backfaceVisibility: 'hidden' }}
           >
-            <div className="text-base md:text-lg font-bold text-primary text-center leading-tight">
-              {word.transliteration}
-            </div>
-            {word.tamil && (
-              <div className="text-sm md:text-base text-muted-foreground mt-2 text-center">
-                {word.tamil}
+            <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+              <div className="text-xl md:text-2xl font-medium text-foreground text-center tracking-tight">
+                {word.transliteration}
               </div>
-            )}
-            <div className="mt-auto pt-2 text-xs text-muted-foreground italic">
-              Tap to reveal meaning
+              {word.tamil && (
+                <div className="text-2xl md:text-3xl text-primary/90 font-normal text-center">
+                  {word.tamil}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <RotateCcw className="w-3 h-3" />
+              <span>Tap to reveal</span>
             </div>
           </Card>
 
           {/* Back of card */}
           <Card
-            className="absolute w-full h-full flex flex-col items-center justify-center p-4 md:p-5 bg-primary text-primary-foreground shadow-xl"
+            className="absolute w-full h-full flex flex-col items-center justify-center p-8 md:p-10 bg-primary text-primary-foreground elevation-lg border-0 transition-smooth"
             style={{
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)'
             }}
           >
-            <div className="text-sm md:text-base font-bold text-center leading-tight">
-              {word.meaning}
-            </div>
-            {word.tamil && (
-              <div className="text-xs md:text-sm text-primary-foreground/90 mt-2 text-center">
-                {word.tamil}
+            <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+              <div className="text-xl md:text-2xl font-medium text-center leading-relaxed">
+                {word.meaning}
               </div>
-            )}
-            <div className="mt-auto pt-2 text-xs text-primary-foreground/80 italic">
-              Tap to flip back
+              {word.tamil && (
+                <div className="text-lg md:text-xl text-primary-foreground/80 font-light text-center">
+                  {word.tamil}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2 text-xs text-primary-foreground/70">
+              <RotateCcw className="w-3 h-3" />
+              <span>Tap to flip back</span>
             </div>
           </Card>
         </div>
       </div>
+
       {onMarkDone && (
         <Button
           onClick={handleDoneClick}
           variant={isDone ? 'secondary' : 'outline'}
-          size="sm"
+          size="default"
           disabled={isDone}
-          className={isDone
-            ? 'bg-green-600 text-white hover:bg-green-600 cursor-default'
-            : 'bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white'
-          }
+          className={`
+            min-w-[140px] transition-all duration-300
+            ${isDone
+              ? 'bg-success text-success-foreground hover:bg-success border-success shadow-sm'
+              : 'hover:bg-secondary hover:border-primary/20'
+            }
+          `}
         >
-          <Check className="w-4 h-4 mr-1" />
-          {isDone ? 'Done' : 'Mark Done'}
+          <Check className={`w-4 h-4 mr-2 transition-transform ${isDone ? 'scale-110' : ''}`} />
+          {isDone ? 'Completed' : 'Mark Complete'}
         </Button>
       )}
     </div>

@@ -6,17 +6,31 @@ export default async function Home() {
   const user = await getUser()
 
   return (
-    <main className="gradient-bg min-h-screen flex flex-col items-center justify-center p-4 md:p-8 relative">
+    <main className="min-h-screen bg-background">
       <AuthButton />
-      <h1 className="text-white text-2xl md:text-4xl font-bold mb-6 md:mb-8 text-center drop-shadow-lg mt-16 md:mt-0">
-        Learn Tamil
-      </h1>
-      {user && (
-        <p className="text-white/90 mb-6 text-base text-center">
-          Welcome back! Ready to learn?
-        </p>
-      )}
-      <FlashcardDeck userId={user?.id ?? null} />
+
+      {/* Hero Section with subtle gradient accent */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-accent/20 via-accent/5 to-transparent h-[400px] pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-4 md:px-8 pt-20 md:pt-24 pb-8 md:pb-12">
+          <div className="text-center space-y-4 mb-8 md:mb-12">
+            <h1 className="text-foreground">
+              Learn Tamil
+            </h1>
+            {user && (
+              <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
+                Welcome back! Continue your learning journey
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-12 md:pb-20">
+        <FlashcardDeck userId={user?.id ?? null} />
+      </div>
     </main>
   )
 }

@@ -25,34 +25,36 @@ export default function WaitingState({
   }, [onCheckForReply, pollInterval])
 
   return (
-    <Card className="w-full max-w-full md:max-w-2xl bg-white/10 backdrop-blur-sm border-white/20">
-      <CardContent className="p-4 md:p-6">
+    <Card className="w-full max-w-full md:max-w-2xl elevation-lg border-0">
+      <CardContent className="p-6 md:p-8">
         <div className="flex flex-col items-center gap-4 md:gap-6 text-center">
           <div className="relative">
-            <MessageCircle className="w-12 h-12 md:w-16 md:h-16 text-white/60" />
-            <div className="absolute -bottom-1 -right-1 bg-white/20 rounded-full p-1">
-              <Loader2 className="w-4 h-4 md:w-5 md:h-5 text-white animate-spin" />
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-accent/50 flex items-center justify-center">
+              <MessageCircle className="w-8 h-8 md:w-10 md:h-10 text-accent-foreground" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-2">
+              <Loader2 className="w-4 h-4 md:w-5 md:h-5 text-primary-foreground animate-spin" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-lg md:text-xl font-semibold text-white">
+            <h3 className="text-xl md:text-2xl font-light text-foreground">
               Waiting for Admin Reply
             </h3>
-            <p className="text-white/70 text-xs md:text-sm">
+            <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
               Your sentence has been submitted. An admin will reply shortly.
             </p>
           </div>
 
-          <div className="w-full p-3 md:p-4 bg-white/5 rounded-lg">
-            <p className="text-white/50 text-xs uppercase tracking-wide mb-2">
+          <div className="w-full p-4 md:p-5 bg-accent/10 border border-accent/20 rounded-lg">
+            <p className="text-muted-foreground text-xs uppercase tracking-wider mb-2">
               Your sentence:
             </p>
-            <p className="text-white text-base md:text-lg">{sentenceTamil}</p>
+            <p className="text-foreground text-base md:text-lg font-medium">{sentenceTamil}</p>
           </div>
 
-          <div className="flex items-center gap-2 text-white/50 text-xs md:text-sm">
-            <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin" />
+          <div className="flex items-center gap-2 text-muted-foreground text-xs md:text-sm">
+            <Loader2 className="w-4 h-4 animate-spin" />
             <span>Checking for reply...</span>
           </div>
         </div>

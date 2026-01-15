@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Send, Sparkles } from 'lucide-react'
+import { Loader2, Send, Sparkles, CheckCircle2 } from 'lucide-react'
 import { submitLearnerSentence } from '@/app/actions/conversations'
 import { evaluateTamilSentence } from '@/app/actions/evaluations'
 import { Word } from '@/app/actions/words'
@@ -45,13 +45,11 @@ export default function SentenceSubmissionForm({
       }
       return newSet
     })
-    // Clear evaluation when words change
     setEvaluation(null)
   }
 
   const handleSentenceChange = (value: string) => {
     setSentence(value)
-    // Clear evaluation when sentence changes
     setEvaluation(null)
   }
 
@@ -113,42 +111,51 @@ export default function SentenceSubmissionForm({
   const canSubmit = evaluation?.rating === 'correct'
 
   return (
-    <Card className="w-full max-w-full md:max-w-2xl bg-white/10 backdrop-blur-sm border-white/20">
-      <CardHeader className="p-4 md:p-6">
-        <CardTitle className="text-white text-center text-lg md:text-xl">Write a Tamil Sentence</CardTitle>
+    <Card className="w-full max-w-3xl elevation-lg border-0">
+      <CardHeader className="p-6 md:p-8 pb-4">
+        <CardTitle className="text-center text-2xl md:text-3xl font-light">
+          Compose Your Sentence
+        </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 md:p-6 pt-0">
-        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-          <div className="space-y-2">
-            <Label className="text-white/90 text-sm md:text-base">Select the words you used:</Label>
+      <CardContent className="p-6 md:p-8 pt-0">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Word Selection */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-foreground">
+              Select words to include
+            </Label>
             <div className="flex flex-wrap gap-2">
               {availableWords.map(word => (
                 <button
                   key={word.id}
                   type="button"
                   onClick={() => toggleWordSelection(word.id)}
-                  className={`px-3 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all min-h-[44px] ${
-                    selectedWords.has(word.id)
-                      ? 'bg-white text-purple-700'
-                      : 'bg-white/20 text-white hover:bg-white/30'
-                  }`}
+                  className={`
+                    px-4 py-2.5 rounded-lg text-sm font-medium transition-all min-h-[44px]
+                    ${selectedWords.has(word.id)
+                      ? 'bg-primary text-primary-foreground elevation-sm'
+                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border'
+                    }
+                  `}
                 >
-                  {word.tamil || word.transliteration} ({word.word_type})
+                  <span className="text-base">{word.tamil || word.transliteration}</span>
+                  <span className="text-xs ml-2 opacity-70">({word.word_type})</span>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="sentence" className="text-white/90 text-sm md:text-base">
-              Your Tamil sentence:
+          {/* Sentence Input */}
+          <div className="space-y-3">
+            <Label htmlFor="sentence" className="text-sm font-medium text-foreground">
+              Your Tamil sentence
             </Label>
             <textarea
               id="sentence"
               value={sentence}
               onChange={e => handleSentenceChange(e.target.value)}
-              placeholder="Write a sentence using the words above..."
-              className="w-full h-24 md:h-32 p-3 rounded-md bg-white/10 text-white placeholder:text-white/50 border border-white/20 focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 resize-none text-base"
+              placeholder="Write a sentence using the selected words..."
+              className="w-full h-32 md:h-40 p-4 rounded-lg bg-background text-foreground placeholder:text-muted-foreground border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none text-base leading-relaxed transition-all"
             />
           </div>
 
@@ -164,59 +171,63 @@ export default function SentenceSubmissionForm({
           )}
 
           {error && (
-            <p className="text-red-300 text-sm text-center">{error}</p>
+            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-center">
+              <p className="text-destructive text-sm font-medium">{error}</p>
+            </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-3">
-            {/* Evaluate Button - always visible unless already correct */}
+          <div className="flex flex-col gap-3 pt-2">
             {(!evaluation || evaluation.rating !== 'correct') && (
               <Button
                 type="button"
                 onClick={handleEvaluate}
                 disabled={isEvaluating || !sentence.trim() || selectedWords.size === 0}
-                className="w-full bg-blue-600 text-white hover:bg-blue-700 h-11 md:h-10"
+                className="w-full gap-2"
+                size="lg"
               >
                 {isEvaluating ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Evaluating...
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Analyzing</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    {evaluation ? 'Re-evaluate' : 'Evaluate Sentence'}
+                    <Sparkles className="w-5 h-5" />
+                    <span>{evaluation ? 'Re-evaluate' : 'Evaluate Sentence'}</span>
                   </>
                 )}
               </Button>
             )}
 
-            {/* Submit Button - only enabled when evaluation passes */}
             <Button
               type="submit"
               disabled={isSubmitting || !canSubmit}
-              className={`w-full h-11 md:h-10 ${
-                canSubmit
-                  ? 'bg-white text-purple-700 hover:bg-white/90'
-                  : 'bg-white/30 text-white/50 cursor-not-allowed'
-              }`}
+              variant={canSubmit ? 'success' : 'secondary'}
+              size="lg"
+              className="w-full gap-2"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Submitting...
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Submitting</span>
+                </>
+              ) : canSubmit ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Submit to Instructor</span>
                 </>
               ) : (
                 <>
-                  <Send className="w-4 h-4 mr-2" />
-                  Submit to Admin
+                  <Send className="w-5 h-5" />
+                  <span>Evaluate to Submit</span>
                 </>
               )}
             </Button>
 
-            {!canSubmit && !evaluation && (
-              <p className="text-white/60 text-xs text-center">
-                Evaluate your sentence to enable submission
+            {!canSubmit && evaluation && evaluation.rating !== 'correct' && (
+              <p className="text-muted-foreground text-xs text-center">
+                Revise your sentence based on the feedback above
               </p>
             )}
           </div>
