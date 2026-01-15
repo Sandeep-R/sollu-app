@@ -47,7 +47,7 @@ export default function SignInPage() {
           color: '#666',
           fontSize: '0.9rem'
         }}>
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <a href="/signup" style={{
             color: '#667eea',
             textDecoration: 'none',
