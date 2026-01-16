@@ -129,20 +129,42 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
   }
 
   try {
+    console.log('[SW] Attempting to register service worker at /sw.js');
+    
+    // Check if service worker file is accessible
+    try {
+      const response = await fetch('/sw.js', { method: 'HEAD' });
+      if (!response.ok) {
+        console.error(`[SW] Service worker file not accessible: ${response.status} ${response.statusText}`);
+        throw new Error(`Service worker file not accessible: ${response.status} ${response.statusText}`);
+      }
+      console.log('[SW] Service worker file is accessible');
+    } catch (fetchError) {
+      console.error('[SW] Error checking service worker file:', fetchError);
+      throw new Error(`Cannot access service worker file: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
+    }
+
     // Register the service worker
     const registration = await navigator.serviceWorker.register('/sw.js', {
       scope: '/',
     });
 
-    console.log('Service worker registered:', registration);
+    console.log('[SW] Service worker registered successfully:', {
+      scope: registration.scope,
+      active: registration.active?.scriptURL,
+      installing: registration.installing?.scriptURL,
+      waiting: registration.waiting?.scriptURL,
+    });
 
     // Wait for the service worker to be ready
     await navigator.serviceWorker.ready;
+    console.log('[SW] Service worker is ready');
 
     return registration;
   } catch (error) {
-    console.error('Error registering service worker:', error);
-    throw error;
+    console.error('[SW] Error registering service worker:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to register service worker: ${errorMessage}`);
   }
 }
 
