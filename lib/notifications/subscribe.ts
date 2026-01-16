@@ -12,14 +12,77 @@
 import { getPublicVapidKey } from './vapid';
 
 /**
+ * Check if running on iOS
+ */
+function isIOSDevice(): boolean {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
+}
+
+/**
+ * Check if running as installed PWA (standalone mode)
+ */
+function isStandaloneMode(): boolean {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone === true
+  );
+}
+
+/**
  * Check if the browser supports push notifications
  */
 export function isPushNotificationSupported(): boolean {
-  return (
+  // Check iOS first - iOS Safari doesn't support push notifications unless PWA is installed
+  const isIOS = isIOSDevice();
+  if (isIOS) {
+    // iOS 16.4+ supports push notifications, but only for installed PWAs
+    return isStandaloneMode();
+  }
+
+  // For other platforms, check standard Web Push API support
+  const hasBasicSupport =
     'serviceWorker' in navigator &&
     'PushManager' in window &&
-    'Notification' in window
-  );
+    'Notification' in window;
+
+  return hasBasicSupport;
+}
+
+/**
+ * Get reason why push notifications are not supported (if applicable)
+ */
+export function getNotSupportedReason(): string | null {
+  const isIOS = isIOSDevice();
+  const isStandalone = isStandaloneMode();
+
+  // iOS-specific messaging
+  if (isIOS) {
+    if (!isStandalone) {
+      return 'On iOS, push notifications are only available when the app is installed and opened from your home screen. Please tap the Share button and select "Add to Home Screen", then open the app from your home screen.';
+    }
+    // If iOS and standalone, it should be supported (iOS 16.4+)
+    // But if it's not working, might be iOS version issue
+    return null;
+  }
+
+  // For other platforms, check what's missing
+  const hasServiceWorker = 'serviceWorker' in navigator;
+  const hasPushManager = 'PushManager' in window;
+  const hasNotification = 'Notification' in window;
+
+  if (!hasServiceWorker) {
+    return 'Service Workers are not supported in your browser.';
+  }
+
+  if (!hasPushManager) {
+    return 'Push Manager is not supported in your browser.';
+  }
+
+  if (!hasNotification) {
+    return 'Notifications API is not supported in your browser.';
+  }
+
+  return null;
 }
 
 /**
@@ -84,11 +147,57 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 }
 
 /**
+ * Validate VAPID public key format
+ */
+function validateVapidKey(key: string): { valid: boolean; error?: string } {
+  if (!key || key.trim().length === 0) {
+    return { valid: false, error: 'VAPID key is empty' };
+  }
+
+  // Remove any whitespace
+  const cleanKey = key.trim();
+
+  // VAPID public key should be URL-safe base64 (no padding typically)
+  // When decoded, it should be 65 bytes (uncompressed EC public key)
+  try {
+    const padding = '='.repeat((4 - (cleanKey.length % 4)) % 4);
+    const base64 = (cleanKey + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    
+    // EC public key (uncompressed) should be 65 bytes: 0x04 + 32 bytes X + 32 bytes Y
+    if (rawData.length !== 65) {
+      return {
+        valid: false,
+        error: `Invalid VAPID key length: expected 65 bytes, got ${rawData.length} bytes. Key length: ${cleanKey.length} chars`,
+      };
+    }
+
+    // Check first byte is 0x04 (uncompressed point indicator)
+    if (rawData.charCodeAt(0) !== 0x04) {
+      return {
+        valid: false,
+        error: `Invalid VAPID key format: first byte should be 0x04 (uncompressed), got 0x${rawData.charCodeAt(0).toString(16)}`,
+      };
+    }
+
+    return { valid: true };
+  } catch (error) {
+    return {
+      valid: false,
+      error: `Invalid VAPID key format: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    };
+  }
+}
+
+/**
  * Convert VAPID public key from base64 to Uint8Array
  */
 function urlBase64ToUint8Array(base64String: string): BufferSource {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  // Remove whitespace
+  const cleanKey = base64String.trim();
+  
+  const padding = '='.repeat((4 - (cleanKey.length % 4)) % 4);
+  const base64 = (cleanKey + padding).replace(/\-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -125,6 +234,14 @@ export async function subscribeToPushNotifications(): Promise<PushSubscription |
     const vapidPublicKey = getPublicVapidKey();
     if (!vapidPublicKey) {
       throw new Error('VAPID public key is not configured');
+    }
+
+    // Validate VAPID key format
+    const validation = validateVapidKey(vapidPublicKey);
+    if (!validation.valid) {
+      console.error('[Subscribe] Invalid VAPID key:', validation.error);
+      console.error('[Subscribe] Key received:', vapidPublicKey.substring(0, 20) + '...');
+      throw new Error(`Invalid VAPID public key: ${validation.error}`);
     }
 
     // Subscribe to push notifications

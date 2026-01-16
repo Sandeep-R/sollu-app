@@ -7,32 +7,15 @@
  * variables to add to your .env.local file.
  */
 
-const crypto = require('crypto');
-
-function urlBase64Encode(buffer) {
-  return buffer
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
-}
+const webpush = require('web-push');
 
 function generateVapidKeys() {
-  const { publicKey, privateKey } = crypto.generateKeyPairSync('ec', {
-    namedCurve: 'prime256v1',
-    publicKeyEncoding: {
-      type: 'spki',
-      format: 'der',
-    },
-    privateKeyEncoding: {
-      type: 'pkcs8',
-      format: 'der',
-    },
-  });
-
+  // Generate VAPID keys using web-push library (standard tool)
+  const vapidKeys = webpush.generateVAPIDKeys();
+  
   return {
-    publicKey: urlBase64Encode(publicKey),
-    privateKey: urlBase64Encode(privateKey),
+    publicKey: vapidKeys.publicKey,
+    privateKey: vapidKeys.privateKey,
   };
 }
 

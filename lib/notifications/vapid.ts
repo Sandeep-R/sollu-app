@@ -14,7 +14,8 @@
  */
 
 // Public key (safe to expose to client)
-export const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
+// Trim whitespace to handle copy/paste issues
+export const VAPID_PUBLIC_KEY = (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '').trim();
 
 // Private key (server-only, never expose to client)
 export const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';

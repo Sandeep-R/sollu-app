@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch'
 import {
   isPushNotificationSupported,
   getNotificationPermission,
+  getNotSupportedReason,
   setupPushNotifications,
   unsubscribeFromPushNotifications,
   getPushSubscription,
@@ -168,7 +169,7 @@ export default function NotificationSettingsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Push notifications are not supported in your browser.
+                {getNotSupportedReason() || 'Push notifications are not supported in your browser.'}
               </p>
             </CardContent>
           </Card>
@@ -176,6 +177,21 @@ export default function NotificationSettingsPage() {
 
         {isSupported && (
           <>
+            {/* iOS PWA Info */}
+            {/iPad|iPhone|iPod/.test(navigator.userAgent) && (
+              <Card className="border-blue-200 bg-blue-50">
+                <CardHeader>
+                  <CardTitle className="text-blue-900">📱 iOS Users</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-blue-800">
+                    Make sure you&apos;ve added this app to your Home Screen and opened it from there.
+                    Notifications only work when the app is installed as a PWA on iOS.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
             <Card>
               <CardHeader>
                 <CardTitle>Browser Notifications</CardTitle>
@@ -217,9 +233,14 @@ export default function NotificationSettingsPage() {
                 )}
 
                 {permission === 'default' && (
-                  <Button onClick={handleEnableNotifications} disabled={saving}>
-                    {saving ? 'Enabling...' : 'Enable Notifications'}
-                  </Button>
+                  <div className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Click the button below to request notification permission from your browser.
+                    </p>
+                    <Button onClick={handleEnableNotifications} disabled={saving} className="w-full">
+                      {saving ? 'Requesting Permission...' : 'Request Notification Permission'}
+                    </Button>
+                  </div>
                 )}
               </CardContent>
             </Card>

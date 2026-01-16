@@ -14,6 +14,7 @@ import {
   setupPushNotifications,
   isPushNotificationSupported,
   getNotificationPermission,
+  getNotSupportedReason,
 } from '@/lib/notifications/subscribe';
 
 interface NotificationPermissionProps {
@@ -70,9 +71,48 @@ export default function NotificationPermission({
     onComplete?.(false);
   };
 
-  // Don't show if not supported
+  // Show helpful message if not supported
   if (!isSupported) {
-    return null;
+    const reason = getNotSupportedReason();
+    if (!reason) return null;
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+
+    return (
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle>Notifications Not Available</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">{reason}</p>
+          
+          {isIOS && !isStandalone && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <p className="text-sm font-semibold text-blue-900 mb-2">How to enable notifications on iOS:</p>
+              <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+                <li>Tap the Share button <span className="font-mono">□↑</span> at the bottom of Safari</li>
+                <li>Scroll down and tap &ldquo;Add to Home Screen&rdquo;</li>
+                <li>Tap &ldquo;Add&rdquo; to confirm</li>
+                <li>Close Safari and open the app from your home screen</li>
+                <li>Return here to enable notifications</li>
+              </ol>
+              <p className="text-xs text-blue-700 mt-3">
+                Note: Requires iOS 16.4 or later. Push notifications only work when the app is opened from your home screen.
+              </p>
+            </div>
+          )}
+        </CardContent>
+        {showSkip && (
+          <CardFooter>
+            <Button variant="outline" onClick={handleSkip} className="w-full">
+              Continue
+            </Button>
+          </CardFooter>
+        )}
+      </Card>
+    );
   }
 
   // Don't show if already granted (unless there's an error to show)
