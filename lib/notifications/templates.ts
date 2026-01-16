@@ -32,7 +32,7 @@ export function learnerSubmissionNotification(
     data: {
       type: 'learner_submission',
       conversationId,
-      url: `/conversations/${conversationId}`,
+      url: `/admin/conversations`,
     },
   };
 }
@@ -54,7 +54,7 @@ export function adminReplyNotification(
     data: {
       type: 'admin_reply',
       conversationId,
-      url: `/conversations/${conversationId}`,
+      url: `/`,
     },
   };
 }
@@ -105,7 +105,7 @@ export function evaluationCompletedNotification(
     data: {
       type: 'evaluation_completed',
       conversationId,
-      url: `/conversations/${conversationId}`,
+      url: `/`,
     },
   };
 }
