@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -44,7 +45,10 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#667eea" />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ServiceWorkerRegistration />
+        {children}
+      </body>
     </html>
   )
 }

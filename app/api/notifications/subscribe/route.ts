@@ -48,18 +48,25 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      console.error('Error saving push subscription:', error);
+      console.error('[Subscribe API] Error saving push subscription:', error);
       return NextResponse.json(
-        { error: 'Failed to save push subscription' },
+        { 
+          error: 'Failed to save push subscription',
+          details: error.message,
+        },
         { status: 500 }
       );
     }
 
+    console.log('[Subscribe API] Successfully saved subscription for user:', user.id);
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error('Error in subscribe API:', error);
+    console.error('[Subscribe API] Error in subscribe API:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
   }

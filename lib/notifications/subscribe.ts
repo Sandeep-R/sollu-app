@@ -339,8 +339,18 @@ export async function savePushSubscription(
   try {
     const subscriptionJSON = subscription.toJSON();
 
+    if (!subscriptionJSON.endpoint || !subscriptionJSON.keys?.p256dh || !subscriptionJSON.keys?.auth) {
+      throw new Error('Invalid subscription data: missing endpoint or keys');
+    }
+
     const platform = detectPlatform();
     const userAgent = navigator.userAgent;
+
+    console.log('[Subscribe] Saving subscription to database:', {
+      userId,
+      endpoint: subscriptionJSON.endpoint.substring(0, 50) + '...',
+      platform,
+    });
 
     const response = await fetch('/api/notifications/subscribe', {
       method: 'POST',
@@ -351,8 +361,8 @@ export async function savePushSubscription(
         userId,
         endpoint: subscriptionJSON.endpoint,
         keys: {
-          p256dh: subscriptionJSON.keys?.p256dh,
-          auth: subscriptionJSON.keys?.auth,
+          p256dh: subscriptionJSON.keys.p256dh,
+          auth: subscriptionJSON.keys.auth,
         },
         userAgent,
         platform,
@@ -360,13 +370,17 @@ export async function savePushSubscription(
     });
 
     if (!response.ok) {
-      throw new Error('Failed to save push subscription');
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+      const errorDetails = errorData.details ? ` - ${errorData.details}` : '';
+      throw new Error(`Failed to save push subscription: ${errorMessage}${errorDetails}`);
     }
 
-    console.log('Push subscription saved to database');
+    const result = await response.json();
+    console.log('[Subscribe] Push subscription saved to database successfully:', result);
     return true;
   } catch (error) {
-    console.error('Error saving push subscription:', error);
+    console.error('[Subscribe] Error saving push subscription:', error);
     throw error;
   }
 }
