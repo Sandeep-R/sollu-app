@@ -442,13 +442,16 @@ export async function setupPushNotifications(userId: string): Promise<{
   permission: NotificationPermission;
   subscription?: PushSubscription;
   error?: string;
+  details?: any;
 }> {
   try {
-    console.log('[Subscribe] Starting setup for user:', userId);
+    console.log('🔵 [Subscribe] ========================================');
+    console.log('🔵 [Subscribe] Starting setup for user:', userId);
+    console.log('🔵 [Subscribe] ========================================');
 
     // Check if supported
     if (!isPushNotificationSupported()) {
-      console.log('[Subscribe] Push notifications not supported');
+      console.log('❌ [Subscribe] Push notifications not supported');
       return {
         success: false,
         permission: 'default',
@@ -456,14 +459,15 @@ export async function setupPushNotifications(userId: string): Promise<{
       };
     }
 
-    console.log('[Subscribe] Browser supports push notifications');
+    console.log('✅ [Subscribe] Browser supports push notifications');
 
     // Request permission
-    console.log('[Subscribe] Requesting permission...');
+    console.log('🔵 [Subscribe] Requesting permission...');
     const permission = await requestNotificationPermission();
-    console.log('[Subscribe] Permission result:', permission);
+    console.log('📱 [Subscribe] Permission result:', permission);
 
     if (permission !== 'granted') {
+      console.log('❌ [Subscribe] Permission not granted:', permission);
       return {
         success: false,
         permission,
@@ -471,12 +475,15 @@ export async function setupPushNotifications(userId: string): Promise<{
       };
     }
 
+    console.log('✅ [Subscribe] Permission granted!');
+
     // Subscribe to push notifications
-    console.log('[Subscribe] Creating push subscription...');
+    console.log('🔵 [Subscribe] Creating push subscription...');
     const subscription = await subscribeToPushNotifications();
-    console.log('[Subscribe] Subscription created:', !!subscription);
+    console.log('📋 [Subscribe] Subscription created:', !!subscription);
 
     if (!subscription) {
+      console.error('❌ [Subscribe] Failed to create push subscription');
       return {
         success: false,
         permission,
@@ -484,10 +491,29 @@ export async function setupPushNotifications(userId: string): Promise<{
       };
     }
 
+    const subJSON = subscription.toJSON();
+    console.log('✅ [Subscribe] Push subscription details:', {
+      endpoint: subJSON.endpoint?.substring(0, 50) + '...',
+      hasKeys: !!(subJSON.keys?.p256dh && subJSON.keys?.auth),
+    });
+
     // Save to database
-    console.log('[Subscribe] Saving subscription to database...');
-    await savePushSubscription(userId, subscription);
-    console.log('[Subscribe] Subscription saved successfully!');
+    console.log('🔵 [Subscribe] Saving subscription to database...');
+    try {
+      await savePushSubscription(userId, subscription);
+      console.log('✅ [Subscribe] Subscription saved successfully!');
+    } catch (saveError) {
+      console.error('❌ [Subscribe] Failed to save subscription:', saveError);
+      return {
+        success: false,
+        permission,
+        error: `Failed to save subscription: ${saveError instanceof Error ? saveError.message : 'Unknown error'}`,
+        details: { saveError: saveError instanceof Error ? saveError.message : String(saveError) },
+      };
+    }
+
+    console.log('🎉 [Subscribe] Setup complete!');
+    console.log('🔵 [Subscribe] ========================================');
 
     return {
       success: true,
@@ -495,11 +521,12 @@ export async function setupPushNotifications(userId: string): Promise<{
       subscription,
     };
   } catch (error) {
-    console.error('[Subscribe] Error setting up push notifications:', error);
+    console.error('❌ [Subscribe] Error setting up push notifications:', error);
     return {
       success: false,
       permission: getNotificationPermission(),
       error: error instanceof Error ? error.message : 'Unknown error',
+      details: { error: error instanceof Error ? error.stack : String(error) },
     };
   }
 }
