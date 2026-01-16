@@ -22,7 +22,20 @@ export default function TestNotificationsPage() {
 
   useEffect(() => {
     async function checkStatus() {
-      const newStatus = { ...status };
+      const newStatus: {
+        swSupported: boolean;
+        swRegistered: boolean;
+        swActive: boolean;
+        permission: NotificationPermission;
+        subscription: boolean;
+        error?: string;
+      } = {
+        swSupported: false,
+        swRegistered: false,
+        swActive: false,
+        permission: 'default' as NotificationPermission,
+        subscription: false,
+      };
 
       // Check if service workers are supported
       newStatus.swSupported = 'serviceWorker' in navigator;
@@ -54,6 +67,7 @@ export default function TestNotificationsPage() {
     }
 
     checkStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRegisterSW = async () => {
@@ -167,10 +181,10 @@ export default function TestNotificationsPage() {
           </CardHeader>
           <CardContent className="text-sm space-y-2">
             <p>✅ All checks should be green</p>
-            <p>✅ "Show Notification Directly" should show a notification immediately</p>
-            <p>✅ "Send Test Push Notification" should show a notification via service worker</p>
+            <p>✅ &ldquo;Show Notification Directly&rdquo; should show a notification immediately</p>
+            <p>✅ &ldquo;Send Test Push Notification&rdquo; should show a notification via service worker</p>
             <p className="mt-4 text-muted-foreground">
-              If service worker is not registered or active, click "Register Service Worker"
+              If service worker is not registered or active, click &ldquo;Register Service Worker&rdquo;
             </p>
           </CardContent>
         </Card>

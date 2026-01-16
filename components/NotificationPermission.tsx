@@ -31,6 +31,7 @@ export default function NotificationPermission({
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [wasDenied, setWasDenied] = useState(false);
 
   useEffect(() => {
     setIsSupported(isPushNotificationSupported());
@@ -46,12 +47,16 @@ export default function NotificationPermission({
 
       if (result.success) {
         setPermission('granted');
+        setWasDenied(false);
         onComplete?.(true);
       } else {
         setError(result.error || 'Failed to enable notifications');
         setPermission(result.permission);
         if (result.permission === 'denied') {
+          setWasDenied(true);
           onComplete?.(false);
+        } else {
+          setWasDenied(false);
         }
       }
     } catch (err) {
@@ -70,8 +75,13 @@ export default function NotificationPermission({
     return null;
   }
 
-  // Don't show if already granted or denied
-  if (permission === 'granted' || permission === 'denied') {
+  // Don't show if already granted (unless there's an error to show)
+  if (permission === 'granted' && !error) {
+    return null;
+  }
+  
+  // Don't show if already denied initially (but show if denied after user action with error)
+  if (permission === 'denied' && !error && !wasDenied) {
     return null;
   }
 
@@ -97,7 +107,7 @@ export default function NotificationPermission({
         {error && (
           <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
             {error}
-            {permission === 'denied' && (
+            {wasDenied && (
               <p className="mt-2">
                 You&apos;ve blocked notifications. To enable them, please update your browser
                 settings.
