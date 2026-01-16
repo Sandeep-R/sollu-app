@@ -44,6 +44,27 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Sollu" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#667eea" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              console.log('🔵 [Layout Script] Page loaded, checking service worker support...');
+              if ('serviceWorker' in navigator) {
+                console.log('✅ [Layout Script] Service workers are supported');
+                navigator.serviceWorker.getRegistration('/').then(reg => {
+                  if (reg) {
+                    console.log('✅ [Layout Script] Service worker already registered:', reg.scope);
+                  } else {
+                    console.log('⚠️ [Layout Script] No service worker registered yet');
+                  }
+                }).catch(err => {
+                  console.error('❌ [Layout Script] Error checking registration:', err);
+                });
+              } else {
+                console.error('❌ [Layout Script] Service workers NOT supported');
+              }
+            `,
+          }}
+        />
       </head>
       <body className={inter.className}>
         <ServiceWorkerRegistration />

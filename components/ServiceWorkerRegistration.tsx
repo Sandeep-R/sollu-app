@@ -10,15 +10,27 @@ import { useEffect } from 'react';
  */
 export default function ServiceWorkerRegistration() {
   useEffect(() => {
+    // Immediate log to verify component is loading
+    console.log('🔵 [SW Registration] Component mounted - starting registration process');
+    
     async function registerSW() {
       // Only register in browser environment
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined') {
+        console.log('🔵 [SW Registration] Not in browser environment');
+        return;
+      }
+
+      console.log('🔵 [SW Registration] Starting service worker registration...');
+      console.log('🔵 [SW Registration] Window location:', window.location.href);
+      console.log('🔵 [SW Registration] Is secure context:', window.isSecureContext);
 
       // Check if service workers are supported
       if (!('serviceWorker' in navigator)) {
-        console.log('[SW Registration] Service workers not supported');
+        console.error('❌ [SW Registration] Service workers not supported in this browser');
         return;
       }
+
+      console.log('✅ [SW Registration] Service workers are supported');
 
       // Check if we're in a secure context (HTTPS or localhost)
       if (!window.isSecureContext) {
@@ -101,15 +113,32 @@ export default function ServiceWorkerRegistration() {
       }
     }
 
-    // Register service worker after a short delay to avoid blocking page load
-    const timeoutId = setTimeout(() => {
-      registerSW();
-    }, 1000);
+    // Register service worker immediately (no delay needed)
+    registerSW().catch((error) => {
+      console.error('❌ [SW Registration] Fatal error in registration:', error);
+    });
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
+    // No cleanup needed
   }, []);
 
-  return null; // This component doesn't render anything
+  // Return a visible indicator in development
+  if (process.env.NODE_ENV === 'development') {
+    return (
+      <div style={{ 
+        position: 'fixed', 
+        bottom: 10, 
+        right: 10, 
+        background: '#000', 
+        color: '#0f0', 
+        padding: '4px 8px', 
+        fontSize: '10px',
+        zIndex: 9999,
+        fontFamily: 'monospace'
+      }}>
+        SW Reg Active
+      </div>
+    );
+  }
+
+  return null; // This component doesn't render anything in production
 }
