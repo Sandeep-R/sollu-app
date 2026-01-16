@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { isAdmin, getUser } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { StoredEvaluation } from '@/lib/llm/types'
+import { sendNotificationToAdmins } from '@/lib/notifications/service'
+import { learnerSubmissionNotification, adminReplyNotification } from '@/lib/notifications/templates'
 
 export type ConversationStatus = 'pending' | 'replied' | 'completed'
 
@@ -87,6 +89,22 @@ export async function submitLearnerSentence(
 
   if (error) {
     return { error: error.message }
+  }
+
+  // Send notification to all admins
+  try {
+    console.log('🔔 [NOTIFICATION] Starting to send notification to admins for conversation:', data.id)
+    const template = learnerSubmissionNotification(
+      userEmail,
+      sentenceTamil,
+      data.id
+    )
+    console.log('🔔 [NOTIFICATION] Template created:', template)
+    const result = await sendNotificationToAdmins(template, data.id)
+    console.log('🔔 [NOTIFICATION] Notification sent to admins. Result:', result)
+  } catch (notificationError) {
+    // Log error but don't fail the submission
+    console.error('❌ [NOTIFICATION] Failed to send notification to admins:', notificationError)
   }
 
   revalidatePath('/')
@@ -175,6 +193,19 @@ export async function replyToConversation(conversationId: string, replyTamil: st
 
   if (error) {
     return { error: error.message }
+  }
+
+  // Send notification to the learner
+  try {
+    console.log('🔔 [NOTIFICATION] Starting to send notification to learner:', data.user_id, 'for conversation:', conversationId)
+    const { sendNotificationToUser } = await import('@/lib/notifications/service')
+    const template = adminReplyNotification(replyTamil, conversationId)
+    console.log('🔔 [NOTIFICATION] Template created:', template)
+    const result = await sendNotificationToUser(data.user_id, template, 'action_triggered', conversationId)
+    console.log('🔔 [NOTIFICATION] Notification sent to learner. Result:', result)
+  } catch (notificationError) {
+    // Log error but don't fail the reply
+    console.error('❌ [NOTIFICATION] Failed to send notification to learner:', notificationError)
   }
 
   revalidatePath('/')

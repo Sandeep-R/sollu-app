@@ -1,0 +1,27 @@
+
+> sollu-app@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1273ms
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 3.1s (590 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /_next/static/webpack/0d6afc27e170e5bc.webpack.hot-update.json 404 in 3398ms
+ ✓ Compiled in 234ms (238 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /_next/static/webpack/0d6afc27e170e5bc.webpack.hot-update.json 404 in 33ms
+ ○ Compiling / ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (131kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled / in 1887ms (1022 modules)
+ GET /_next/static/webpack/0d6afc27e170e5bc.webpack.hot-update.json 404 in 131ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 200 in 2034ms
+ GET / 200 in 400ms
+ POST / 200 in 138ms
+ POST / 200 in 285ms
+[?25h

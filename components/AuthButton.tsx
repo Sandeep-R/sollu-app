@@ -32,6 +32,9 @@ export default async function AuthButton() {
             <Link href="/admin">Admin</Link>
           </Button>
         )}
+        <Button asChild size="sm" variant="outline" className="elevation-sm">
+          <Link href="/settings/notifications">Settings</Link>
+        </Button>
         <form action={signOut}>
           <Button type="submit" variant="outline" size="sm" className="elevation-sm">
             Sign Out

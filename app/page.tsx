@@ -1,5 +1,6 @@
 import FlashcardDeck from '@/components/FlashcardDeck'
 import AuthButton from '@/components/AuthButton'
+import NotificationPromptBanner from '@/components/NotificationPromptBanner'
 import { getUser } from '@/lib/auth'
 
 export default async function Home() {
@@ -27,6 +28,9 @@ export default async function Home() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 md:pt-8 pb-12 md:pb-20">
+        {/* Show notification prompt banner for existing users */}
+        {user && <NotificationPromptBanner />}
+
         <FlashcardDeck userId={user?.id ?? null} />
       </div>
     </main>

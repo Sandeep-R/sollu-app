@@ -19,7 +19,8 @@ export async function signUp(formData: FormData) {
   }
 
   revalidatePath('/', 'layout')
-  redirect('/')
+  // Redirect to notification setup page after successful signup
+  redirect('/setup-notifications')
 }
 
 export async function signIn(formData: FormData) {
